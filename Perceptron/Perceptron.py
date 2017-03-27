@@ -65,17 +65,24 @@ class Perceptron():
             output = self.predict(X)
             # Calculate the error/cost (desired output - computed output) in order to
             # find out how far you are from the desired output.
-            # We are using the ordinary leasts square method (1/2m * Sum(y-yp)^2)
-            error = np.mean((y - output)**2)
-            self.errors.append(error)
+            # We are using the sum of squared errors method (1/2m * Sum(y-yp)^2)
+            # in order to learn the weights
+            # Basically, the cost function (a function that we want to minimize)
+            #learns the weights as the sum of squared errors
+            error = y - output
             # Adjust weights
             # If input is zero, the weights do not change.
             # The ideal values for weight are the ones where the error is zero.
             # If the expected value (training_outputs) is bigger than the
             # predicted (output) we need to increase the weights.
             # In the opposite case we need to decrease the weights.
-            self.weights[1:] += eta * np.dot(X.T, (y - output))
-            self.bias += eta * error
+            # To do so, we upadte the weights by minimizing the cost function by
+            # gradient descent.
+            self.weights[1:] += eta * np.dot(X.T, error)
+            self.bias += eta * error.sum()
+            cost = 0.5 * np.mean(error**2)
+            self.errors.append(cost)
+            
 
     def predict(self, X):
         """
@@ -95,7 +102,7 @@ class Perceptron():
 if __name__ == "__main__":
     # Train data (implement and gate)
     X_train = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-    Y_train = np.array([0, 0, 0, 1])
+    Y_train = np.array([-1, -1, -1, 1])
 
     # Train perceptron
     per = Perceptron(1000, 0.02)
